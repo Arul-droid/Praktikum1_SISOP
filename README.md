@@ -112,10 +112,29 @@ END {
     else if (opsi == "b") print "Jumlah gerbong penumpang KANJ adalah", length(gerbong)
 }
 ```
+`NR > 1`
+Proses mulai dari baris ke-2, skip baris pertama (header `Nama Penumpang,Usia,Kursi Kelas,Gerbong`).
 
+`gsub(/\r/, "")`
+Menghapus karakter `\r` (carriage return) dari seluruh baris. Ini muncul karena file CSV dibuat di Windows yang menggunakan `\r\n` sebagai akhir baris, sedangkan Linux hanya pakai `\n`. Kalau tidak dihapus, nilai kolom bisa terbaca sebagai `"Gerbong1\r"` yang berbeda dengan `"Gerbong1"`.
 
+`gsub(/ /, "", $4)`
+Menghapus semua spasi di kolom ke-4 (kolom Gerbong). Mencegah `" Gerbong1"` dan `"Gerbong1"` dianggap berbeda karena ada spasi tersembunyi.
+
+`gerbong[$4] = 1`
+Menyimpan nama gerbong ke dalam array. Karena array tidak bisa punya key duplikat, otomatis hanya menyimpan gerbong yang unik:
+
+```bash
+gerbong["Gerbong1"] = 1
+gerbong["Gerbong2"] = 1
+gerbong["Gerbong2"] = 1  ← diabaikan, sudah ada
+gerbong["Gerbong3"] = 1
+gerbong["Gerbong4"] = 1
+```
 
 `END` merupakan block kode yang dijalankan setelah semua baris telah dibaca
+`length(gerbong)`
+Menghitung jumlah elemen dalam array `gerbong` = jumlah gerbong unik
 `else if (opsi == "b") print "Jumlah gerbong penumpang KANJ adalah", length(gerbong)` akan mengeprint 
 
 ```bash
@@ -124,76 +143,105 @@ Jumlah gerbong penumpang KANJ adalah 4
 jika memilih opsi b.
 
 ##### soal c
-Pada soal a kami ditugaskan untuk menghitung jumlah seluruh penumpang kereta.
+Pada soal c kami ditugaskan untuk mencari tau siapa penumpang tertua yang ada di dalam kereta serta menampilkan umurnya.
 
 dengan contoh output:
 ```bash
-Jumlah seluruh penumpang KANJ adalah ${coutn_passenger} orang
+${oldest} adalah penumpang kereta tertua dengan usia ${max_age} tahun
 ```
 untuk itu kita perlu menulis script
 ```bash
+NR > 1 {
+    # c: cari penumpang tertua
+    if ($2 > max_age) {
+        max_age = $2
+        oldest = $1
+    }
+}
 END {
-    count = NR - 1
-    if (opsi == "a") print "Jumlah seluruh penumpang KANJ adalah", count, "orang"
+    else if (opsi == "c") print oldest, "adalah penumpang kereta tertua dengan usia", max_age, "tahun"
 }
 ```
+
 `END` merupakan block kode yang dijalankan setelah semua baris telah dibaca
-`count = NR-1` menyimpan semua baris kecuali baris pertama kedalam variabel count
-`if (opsi == "a") print "Jumlah seluruh penumpang KANJ adalah", count, "orang"` akan mengeprint 
+`else if (opsi == "c") print oldest, "adalah penumpang kereta tertua dengan usia", max_age, "tahun"` akan mengeprint 
 
 ```bash
-Jumlah seluruh penumpang KANJ adalah 208 orang
+Jaja Mihardja adalah penumpang kereta tertua dengan usia 85 tahun
 ```
-jika memilih opsi a.
+jika memilih opsi c.
 
 ##### soal d
-Pada soal a kami ditugaskan untuk menghitung jumlah seluruh penumpang kereta.
+Pada soal d kami ditugaskan untuk menghitung rata-rata usia seluruh penumpang dengan membulatkan hasilnya tanpa koma.
 
 dengan contoh output:
 ```bash
-Jumlah seluruh penumpang KANJ adalah ${coutn_passenger} orang
+Rata-rata usia penumpang adalah ${average_age} tahun
 ```
 untuk itu kita perlu menulis script
 ```bash
+NR > 1 {
+    # d: hitung rata-rata usia
+    total_age += $2
+}
 END {
-    count = NR - 1
-    if (opsi == "a") print "Jumlah seluruh penumpang KANJ adalah", count, "orang"
+    else if (opsi == "d") print "Rata-rata usia penumpang adalah", int(total_age / count), "tahun"
 }
 ```
 `END` merupakan block kode yang dijalankan setelah semua baris telah dibaca
-`count = NR-1` menyimpan semua baris kecuali baris pertama kedalam variabel count
-`if (opsi == "a") print "Jumlah seluruh penumpang KANJ adalah", count, "orang"` akan mengeprint 
+`else if (opsi == "d") print "Rata-rata usia penumpang adalah", int(total_age / count), "tahun"` akan mengeprint 
 
 ```bash
-Jumlah seluruh penumpang KANJ adalah 208 orang
+Rata-rata usia penumpang adalah 37 tahun
 ```
-jika memilih opsi a.
+jika memilih opsi d.
 
 ##### soal e
-Pada soal a kami ditugaskan untuk menghitung jumlah seluruh penumpang kereta.
+Pada soal e kami ditugaskan untuk menghitung jumlah penumpang yang berada pada kelas business pada kereta.
 
 dengan contoh output:
 ```bash
-Jumlah seluruh penumpang KANJ adalah ${coutn_passenger} orang
+Jumlah penumpang business class ada ${business_passenger} orang
 ```
 untuk itu kita perlu menulis script
 ```bash
+NR > 1 {
+    # e: hitung penumpang business class
+    if ($3 == "Business") business++
+}
 END {
-    count = NR - 1
-    if (opsi == "a") print "Jumlah seluruh penumpang KANJ adalah", count, "orang"
+    else if (opsi == "e") print "Jumlah penumpang business class ada", business, "orang"
 }
 ```
 `END` merupakan block kode yang dijalankan setelah semua baris telah dibaca
-`count = NR-1` menyimpan semua baris kecuali baris pertama kedalam variabel count
-`if (opsi == "a") print "Jumlah seluruh penumpang KANJ adalah", count, "orang"` akan mengeprint 
+`else if (opsi == "e") print "Jumlah penumpang business class ada", business, "orang"` akan mengeprint 
 
 ```bash
-Jumlah seluruh penumpang KANJ adalah 208 orang
+Jumlah penumpang business class ada 74 orang
 ```
-jika memilih opsi a.
+jika memilih opsi e.
 
 ##### jika memilih selain a hingga e
+jika kita memilih opsi selain a hingga e maka akan muncul output 
 
+```bash
+Soal tidak dikenali. Gunakan a, b, c, d, atau e
+```
+
+untuk itu kita perlu menulis script
+
+```bash
+END {
+    else print "Soal tidak dikenali. Gunakan a, b, c, d, atau e"
+}
+```
+
+`else print "Soal tidak dikenali. Gunakan a, b, c, d, atau e"` akan mengeprint 
+
+```bash
+Soal tidak dikenali. Gunakan a, b, c, d, atau e
+```
+jika memilih opsi selain a hingga e.
 
 ## Soal 2 (Ekspedisi Gunung Kawi)
 Script bash untuk parsing koordinat dari file JSON.
