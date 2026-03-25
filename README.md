@@ -162,9 +162,15 @@ END {
     else if (opsi == "c") print oldest, "adalah penumpang kereta tertua dengan usia", max_age, "tahun"
 }
 ```
+`NR > 1` akan membaca file csv dari baris 2 hingga akhir
+`if ($2 > max_age) {
+        max_age = $2
+        oldest = $1
+    }` akan menjalan kan `max_age = $2` dan `oldest = $1` jika kolom kedua yang berisi umur lebih besar dari variabel `max_age`
+kemudian variabel `max_age` akan menyimpan umur ketika memenuhi syarat dan sekaligus varibel `oldest` akan menyimpan nama dari pemilik umur tersebut
 
 `END` merupakan block kode yang dijalankan setelah semua baris telah dibaca
-`else if (opsi == "c") print oldest, "adalah penumpang kereta tertua dengan usia", max_age, "tahun"` akan mengeprint 
+`(opsi == "c") print oldest, "adalah penumpang kereta tertua dengan usia", max_age, "tahun"` akan mengeprint 
 
 ```bash
 Jaja Mihardja adalah penumpang kereta tertua dengan usia 85 tahun
